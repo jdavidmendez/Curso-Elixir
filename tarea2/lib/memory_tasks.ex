@@ -37,8 +37,6 @@ defmodule MathChallenger.Memory.MemoryTasks do
 
     #Construyendo los pares {{letra1, posicion1},{letra2,posicion2}} que corresponde a la coordenada ingresada.
 
-    raw_positions(Map.keys(solved_board),Map.values(solved_board)) |> IO.inspect
-    
     {pair1, pair2} = raw_positions(Map.keys(solved_board),Map.values(solved_board))
                      |> Enum.filter(fn {k,_v} -> k ==  elem(ing_pair, 0) or k == elem(ing_pair, 1) end) |> List.to_tuple
 
