@@ -51,10 +51,10 @@ defmodule MathChallenger.Memory.MemoryUtils do
     #Creación de un rango de posiciones, que se vuelve lista y luego se 'agita' para que queden en un orden cualquiera,
     #se agrupa en pares (Lista de listas) y luego se vuelve una lista de tuplas
 
-    pos_pares = 1..12 |> Enum.to_list
-    #Resultado esperado (ejemplo que varía por la aleatoriedad): 1..12 > [1,2,3,4...,12] > [5,1,6,7,...,9,8] > [[5, 1], [6, 7], ..., [9, 8]] > [{5, 1}, {6, 7}, ..., {9, 8}]
-    shuffled_pos_pares = Enum.shuffle(pos_pares)
 
+    pos_pares = 1..12 |> Enum.to_list |> Enum.shuffle |> Enum.chunk_every(2) |> Enum.map(fn [a, b] -> {a, b} end)
+    #Resultado esperado (ejemplo que varía por la aleatoriedad): 1..12 > [1,2,3,4...,12] > [5,1,6,7,...,9,8] > [[5, 1], [6, 7], ..., [9, 8]] > [{5, 1}, {6, 7}, ..., {9, 8}]
+    
     #Por completar: Asociar el contenido de pos_pares a sel_letters de modo que a cada par de posiciones en pos_pares
     #le corresponda un par de vocales/consonantes de sel letters por medio de un mapa.
     #Resultado esperado
@@ -66,30 +66,20 @@ defmodule MathChallenger.Memory.MemoryUtils do
     #  {10, 7} =>  {"U", "u", :vocal, :notfound},
     #  {11, 8} =>  {"B", "b", :consonante, :notfound}
     # }
-    Enum.zip(shuffled_pos_pares, sel_letters)
-    |> Enum.reduce(%{}, fn {{pos1, pos2}, letter}, acc ->
-      acc |> Map.put({pos1, pos2}, {String.upcase(letter), letter, :notfound})
-    end)
+    
+    Map.new(Enum.zip(pos_pares,sel_letters))
   end
 
   def raw_positions(pos_pares, sel_letters) do
     #Por completar: Generar un mapa donde la clave sea el número/posición y el valor la letra.
-    Enum.zip(pos_pares, sel_letters)
-    |> Enum.reduce(%{}, fn {pos, letter}, acc ->
-      acc |> Map.put(pos, {String.upcase(letter), letter, :notfound})
-    end)
+    Enum.zip(
+      pos_pares,
+      Enum.flat_map(sel_letters, fn [_a, b, _c, _d] -> b end)
+    ) |> Map.new
+
   end
 
-
-  defp mark_pair(board, pair1, pair2) do
-    p1 = to_string(elem(pair1, 0))
-    p2 = to_string(elem(pair2, 0))
-    updated_board = String.replace(board, "-" <> p1 <> "-", elem(pair1, 1))
-    updated_board = String.replace(updated_board, "-" <> p2 <> "-", elem(pair2, 1))
-    updated_board
-  end
-
-  defp compare_pairs(pair1, pair2) do
+  def compare_pairs(pair1, pair2) do
     if elem(pair1, 1) == elem(pair2, 1) do
       case elem(pair1, 2) do
         :vocal -> {:correct, :vocal}
@@ -99,6 +89,14 @@ defmodule MathChallenger.Memory.MemoryUtils do
     else
       {:incorrect, nil}
     end
+  end
+
+  def mark_pair(board, pair1, pair2) do
+    p1 = to_string(elem(pair1, 0))
+    p2 = to_string(elem(pair2, 0))
+    updated_board = String.replace(board, "-" <> p1 <> "-", elem(pair1, 1))
+    updated_board = String.replace(updated_board, "-" <> p2 <> "-", elem(pair2, 1))
+    updated_board
   end
 
 
