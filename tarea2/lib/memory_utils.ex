@@ -72,33 +72,46 @@ defmodule MathChallenger.Memory.MemoryUtils do
 
   def raw_positions(pos_pares, sel_letters) do
     #Por completar: Generar un mapa donde la clave sea el número/posición y el valor la letra.
-    Enum.zip(
-      pos_pares,
-      Enum.flat_map(sel_letters, fn [_a, b, _c, _d] -> b end)
+    prueba = Enum.zip(
+      Enum.flat_map(pos_pares, fn {a, b} -> [a,b] end),
+      Enum.flat_map(sel_letters, fn {a, b, _c, _d} -> [a,b] end)
     ) |> Map.new
-
   end
 
   def compare_pairs(pair1, pair2) do
-    if elem(pair1, 1) == elem(pair2, 1) do
-      case elem(pair1, 2) do
+    if String.upcase(elem(pair1, 1)) == String.upcase(elem(pair2, 1)) do
+      case es_vocal(elem(pair1, 1)) do
         :vocal -> {:correct, :vocal}
-        :consonante -> {:correct, :consonante}
-        _ -> {:incorrect, nil}
+        _ -> {:correct, :consonante}
       end
     else
       {:incorrect, nil}
     end
   end
 
-  def mark_pair(board, pair1, pair2) do
-    p1 = to_string(elem(pair1, 0))
-    p2 = to_string(elem(pair2, 0))
-    updated_board = String.replace(board, "-" <> p1 <> "-", elem(pair1, 1))
-    updated_board = String.replace(updated_board, "-" <> p2 <> "-", elem(pair2, 1))
-    updated_board
+  def mark_pair(mapa, tupla1, tupla2) do
+    {numero1, _} = tupla1
+    {numero2, _} = tupla2
+
+    mapa
+    |> Enum.map(fn
+      {{a, b}, {c1, c2, :consonante, :notfound}} when a in [numero1, numero2] and b in [numero1, numero2] ->
+        {{a, b}, {c1, c2, :consonante, :found}}
+      {clave, valor} ->
+        {clave, valor}
+    end)
+    |> Map.new()
   end
 
+
+
+defp es_vocal(letra) when letra in ~w(a e i o u A E I O U) do
+   :vocal
+end
+
+defp es_vocal(_) do
+  :consonante
+end
 
 end
 

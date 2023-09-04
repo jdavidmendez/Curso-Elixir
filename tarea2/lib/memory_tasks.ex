@@ -10,7 +10,7 @@ defmodule MathChallenger.Memory.MemoryTasks do
 
   def init_game do
     IO.puts("Bienvenido al juego de memoria")
-    jugador = IO.gets("Ingresa jugador: ") |> String.trim
+    jugador = IO.gets("Ingresa jugador:") |> String.trim
     sel_letters = selected_letters(alphabet_map())
     solved = load_board(sel_letters)
     game(board(), solved, jugador, 3, 0, 0)
@@ -31,14 +31,18 @@ defmodule MathChallenger.Memory.MemoryTasks do
                |> Enum.map(&String.to_integer/1)
                |> List.to_tuple
 
+    
     #Las coordenadas recibidas, invertirlas.
     #ing_pair_r = ing_pair |> Tuple.to_list |> Enum.reverse |> List.to_tuple
 
     #Construyendo los pares {{letra1, posicion1},{letra2,posicion2}} que corresponde a la coordenada ingresada.
+
+    raw_positions(Map.keys(solved_board),Map.values(solved_board)) |> IO.inspect
+    
     {pair1, pair2} = raw_positions(Map.keys(solved_board),Map.values(solved_board))
                      |> Enum.filter(fn {k,_v} -> k ==  elem(ing_pair, 0) or k == elem(ing_pair, 1) end) |> List.to_tuple
 
-    IO.puts({pair1,pair2})
+    #IO.inspect({pair1, pair2})
     #Mostrar la selección en el tablero utilizando lo anterior
     IO.puts(reveal_cards(board_on, pair1, pair2))
 
@@ -47,13 +51,16 @@ defmodule MathChallenger.Memory.MemoryTasks do
     #Controlar si vuelve a ingresar la misma coordenada ya encontrada, mostrando un mensaje apropiado
     #Controlar si el par no es válido, mostrando un mensaje apropiado
     #Controlar que si el par es correcto, no volverlo a cubrir, debe quedar revelado.
+    #IO.inspect(compare_pairs(pair1,pair2))
     case compare_pairs(pair1, pair2) do
       {:correct, :vocal} ->
-        updated_board = mark_pair(board_on, pair1, pair2)
+        updated_board = reveal_cards(board_on, pair1, pair2)
+        #IO.inspect(mark_pair(solved_board, pair1, pair2))
         updated_solved_board = mark_pair(solved_board, pair1, pair2)
         game(updated_board, updated_solved_board, player, lifes, acc_v + 1, acc_c)
       {:correct, :consonante} ->
-        updated_board = mark_pair(board_on, pair1, pair2)
+        updated_board = reveal_cards(board_on, pair1, pair2)
+        #IO.inspect(mark_pair(solved_board, pair1, pair2))
         updated_solved_board = mark_pair(solved_board, pair1, pair2)
         game(updated_board, updated_solved_board, player, lifes, acc_v, acc_c + 1)
       {:incorrect, _} ->
@@ -65,7 +72,7 @@ defmodule MathChallenger.Memory.MemoryTasks do
 
   defp game(_, _, _, lifes, acc_v, acc_c) when lifes == 0, do: {:gameover, :finished}
 
-  defp game(_, _, _, _, acc_v, acc_c), do: {:winner}
+  defp game(_, _, _, _, acc_v, acc_c) when acc_v + acc_v == 6, do: {:winner}
 
   defp reveal_cards(board_on, pair1, pair2) do
     p1 = to_string(elem(pair1, 0))
