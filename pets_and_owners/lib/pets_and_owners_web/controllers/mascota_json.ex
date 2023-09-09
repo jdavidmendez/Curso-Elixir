@@ -32,7 +32,6 @@ defp data_propietario(%Propietario{} = propietario) do
   %{
     id: propietario.id,
     num_id: propietario.num_id,
-    nombre: propietario.nombre,
     apellido: propietario.apellido,
     fecha_nac: propietario.fecha_nac
   }
