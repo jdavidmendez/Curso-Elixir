@@ -18,7 +18,7 @@ defmodule CanalNoticias.Noticieros do
 
   """
   def list_noticieros do
-    Repo.all(Noticiero)
+    Repo.all(Noticiero) |> Repo.preload(:presentadores)
   end
 
   @doc """
@@ -35,7 +35,7 @@ defmodule CanalNoticias.Noticieros do
       ** (Ecto.NoResultsError)
 
   """
-  def get_noticiero!(id), do: Repo.get!(Noticiero, id)
+  def get_noticiero!(id), do: Repo.get!(Noticiero, id) |> Repo.preload(:presentadores)
 
   @doc """
   Creates a noticiero.
@@ -51,6 +51,7 @@ defmodule CanalNoticias.Noticieros do
   """
   def create_noticiero(attrs \\ %{}) do
     %Noticiero{}
+    |> Repo.preload(:presentadores)
     |> Noticiero.changeset(attrs)
     |> Repo.insert()
   end

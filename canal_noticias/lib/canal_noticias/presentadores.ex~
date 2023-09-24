@@ -18,7 +18,7 @@ defmodule CanalNoticias.Presentadores do
 
   """
   def list_presentadores do
-    Repo.all(Presentador)|> Repo.preload(:noticiero)
+    Repo.all(Presentador)|> Repo.preload(:presentadores)
   end
 
   @doc """
@@ -35,7 +35,7 @@ defmodule CanalNoticias.Presentadores do
       ** (Ecto.NoResultsError)
 
   """
-  def get_presentador!(id), do: Repo.get!(Presentador, id) |> Repo.preload(:noticiero)
+  def get_presentador!(id), do: Repo.get!(Presentador, id) |> Repo.preload(:presentadores)
 
   @doc """
   Creates a presentador.
@@ -51,7 +51,7 @@ defmodule CanalNoticias.Presentadores do
   """
   def create_presentador(attrs \\ %{}) do
     %Presentador{}
-    |> Repo.preload(:noticiero)
+
     |> Presentador.changeset(attrs)
     |> Repo.insert()
   end

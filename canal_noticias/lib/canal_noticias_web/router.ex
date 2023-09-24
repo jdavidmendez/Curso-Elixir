@@ -7,5 +7,8 @@ defmodule CanalNoticiasWeb.Router do
 
   scope "/api", CanalNoticiasWeb do
     pipe_through :api
+    resources "/noticieros", NoticieroController, except: [:new, :edit, :update]
+    resources "/presentadores", PresentadorController, except: [:new, :edit, :update]
+ 
   end
 end

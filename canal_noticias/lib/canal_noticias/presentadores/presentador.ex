@@ -8,7 +8,7 @@ defmodule CanalNoticias.Presentadores.Presentador do
     field :nombre, :string
     field :edad, :integer
     field :programa, :string
-    #field :noticiero_id, :binary_id
+    field :noticiero_id, :binary_id
     belongs_to :noticiero, CanalNoticias.Noticieros.Noticiero
     timestamps()
   end

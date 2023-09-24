@@ -21,7 +21,16 @@ defmodule CanalNoticiasWeb.NoticieroJSON do
       nombre: noticiero.nombre,
       numero_programas: noticiero.numero_programas,
       pais: noticiero.pais,
-      idioma: noticiero.idioma
+      idioma: noticiero.idioma,
+      presentadores: for(v <- noticiero.presentadores, do: data_presentadores(v))
     }
+  end
+
+  defp data_presentadores(%Presentador{} = presentador) do
+   %{
+      nombre: presentador.nombre,
+      edad: presentador.edad,
+      programa: presentador.programa
+    } 
   end
 end
